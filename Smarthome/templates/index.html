@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <title>Weather</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffd6ea;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1{
+            margin-bottom: 18px;
+            text-align: left;
+            color: #333;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            text-align: left;
+            color: #333;
+        }
+
+        .weather-info {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        strong {
+            color: #333;
+            
+        }
+
+        .button-container {
+            display: flex; /* Flexbox 레이아웃 사용 */
+            justify-content: flex-start; /* 요소 사이의 공백을 최대화하고 버튼을 양쪽으로 배치 */
+            margin-top: 10px; /* 버튼과 이전 요소 사이의 간격 조절 */
+            align-items: center;
+
+        }
+
+        .button-container button{
+            
+            margin-right: 5px; /* 버튼 사이의 간격 조절 */
+            width: 100px;
+            height: 40px;
+            font-size: 16px;
+            background-color: #f8f9fa;
+        }
+        .my-margin-left {
+            margin-left: 20px;
+        }
+        .my-margin-right2 {
+            margin-right: 41px;
+
+        }
+        .result {
+            margin-left: 30px;        /*텍스트와 버튼 사이 간격 조절*/
+            font-size: 16px;
+        }.my-margin-right1 {
+            margin-right: 25px;
+        }
+
+        .toggle-button {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        .auto-margin {
+            margin-right: 10px;    
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Smart Home</h1>
+        <div class="weather-info">
+            <ul>
+                <h2><i class="bi bi-house home-icon"></i> 천안시 동남구 신안동</h2>
+                <strong>실시간 날씨</strong>
+                <li><strong>기온:</strong> {{ weather['기온'] }} <strong>ºC</strong></li>
+                <li><strong>하늘 상태:</strong> {{ weather['하늘 상태'] }}</li>
+                <li><strong>강수형태:</strong> {{ weather['강수 형태'] }}</li>
+                <li><strong>1시간 강수량:</strong> {{ weather['1시간 강수량'] }}</li>
+                <li><strong>습도:</strong> {{ weather['습도'] }} <strong>%</strong></li>
+                <li><strong>풍속:</strong> {{ weather['풍속'] }} <strong>m/s</strong></li>
+            </ul>
+            <div class="control-text">
+                <strong>가전 제어</strong>
+            </div>
+            <div class="device-control">
+                <div class="button-container">
+                    <strong class="auto-margin">자동제어</strong>
+                    <button id="auto-on-button" onclick="auto_on()">ON</button>            
+                    <button id="auto-off-button" onclick="auto_off()">OFF</button>
+                    <div id="result_auto"><strong class="my-margin-left">자동제어 모드가 꺼져있습니다.</strong>
+                </div>
+            </div>
+            <div class="device-control">
+                <div class="button-container">
+                    <strong class="my-margin-right2">전등</strong>
+                    <button id="led-on-button" onclick="led_on()">ON</button>            
+                    <button id="led-off-button" onclick="led_off()">OFF</button>
+                    <div id="result_led"><strong class="my-margin-left">전등이 꺼져있습니다.</strong>
+                </div>
+            </div>
+            <div class="device-control">
+                <div class="button-container">
+                    <strong class="my-margin-right1">에어컨</strong>
+                    <button id="aircon-on-button" onclick="aircon_on()">ON</button>            
+                    <button id="aircon-off-button" onclick="aircon_off()">OFF</button>
+                    <div id="result_aircon"><strong class="my-margin-left">에어컨이 꺼져있습니다.</strong>
+                </div>
+            </div>
+            <div class="device-control">
+                <div class="button-container">
+                    <strong class="my-margin-right1">제습기</strong>
+                    <button id="hum-on-button" onclick="hum_on()">ON</button>            
+                    <button id="hum-off-button" onclick="hum_off()">OFF</button>
+                    <div id="result_hum"><strong class="my-margin-left">제습기가 꺼져있습니다.</strong>
+                </div>
+            </div>
+            <div class="device-control">
+                <div class="button-container">
+                    <strong class="my-margin-right2">정원</strong>
+                    <button id="garden-on-button" onclick="garden_on()">ON</button>            
+                    <button id="garden-off-button" onclick="garden_off()">OFF</button>
+                    <div id="result_garden"><strong class="my-margin-left">물주려면 ON을 누르세요.</strong>
+                </div>
+            </div>
+            <div class="device-control">
+                <div class="button-container">
+                    <strong class="my-margin-right2">창문</strong>
+                    <button id="window-open-button" onclick="window_open()">OPEN</button>            
+                    <button id="window-close-button" onclick="window_close()">CLOSE</button>
+                    <div id="result_window"><strong class="my-margin-left">창문이 닫혀있습니다.</strong>
+                </div>
+            </div>
+        </div>
+        
+                
+        <script>        
+            function auto_on(){
+                fetch("/auto/on")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_auto");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>자동제어 모드가 켜져있습니다.</strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+            function auto_off(){
+                fetch("/auto/off")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_auto");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>자동제어 모드가 꺼져있습니다.</strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+        
+            
+            function led_on(){
+                fetch("/led/on")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_led");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>전등이 켜져있습니다.</strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+            
+            function led_off(){
+                fetch("/led/off")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_led");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>전등이 꺼져있습니다.</strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+            
+            function aircon_on(){
+                fetch("/aircon/on")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_aircon");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>에어컨이 켜져있습니다.<strong>";
+                    } else {
+                        result.innerHTML="<strong class=my-text>error<strong>"
+                    }
+                });
+            }
+            
+            function aircon_off(){                
+                fetch("/aircon/off")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_aircon");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>에어컨이 꺼져있습니다.</strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+            
+            function hum_on(){
+                fetch("/hum/on")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_hum");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>제습기가 켜져있습니다.<strong>";
+                    } else {
+                        result.innerHTML="<strong class=my-text>error<strong>"
+                    }
+                });
+            }
+            
+            function hum_off(){
+                fetch("/hum/off")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_hum");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>제습기가 꺼져있습니다.</strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+            
+            function window_open(){               
+                fetch("/window/open")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_window");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>창문이 열려있습니다.<strong>";
+                    } else {
+                        result.innerHTML="<strong class=my-text>error<strong>"
+                    }
+                });
+            }
+            
+            function window_close(){                
+                fetch("/window/close")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_window");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>창문이 닫혀있습니다.</strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+            
+            function garden_on(){                
+                fetch("/garden/on")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_garden");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>정원에 물을 주고 있습니다.<strong>";
+                    } else {
+                        result.innerHTML="<strong class=my-text>error<strong>"
+                    }
+                });
+            }
+            
+            function garden_off(){                
+                fetch("/garden/off")
+                .then(response=>response.text())
+                .then(data=>{
+                    console.log(data);
+                    let result=document.querySelector("#result_garden");
+                    if(data=="ok"){
+                        result.innerHTML="<strong class=my-margin-left>물주려면 ON을 누르세요.<strong>";
+                    } else {
+                        result.innerHTML="<h1>error</h1>"
+                    }
+                });
+            }
+            
+            
+        
+            
+        </script>        
+    </div>
+</body>
+</html>
